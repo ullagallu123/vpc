@@ -73,5 +73,21 @@ variable "nat_tags" {
 }
 
 variable "nat" {
-  type = bool
+  default = false
+}
+
+variable "vpc_flow_logs" {
+  default = false
+}
+# IAM vairables
+variable "iam_role_name" {
+  default = ""
+}
+
+variable "log_group_name" {
+  default = ""
+}
+
+variable "iam_policy_name" {
+  default = ""
 }
