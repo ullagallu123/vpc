@@ -49,6 +49,7 @@ This Terraform module creates a customizable Virtual Private Cloud (VPC) on AWS 
 |   peering              | Boolean to enable/disable VPC peering                      | bool   | false   | no       |
 |   acceptor_vpc_id      | ID of the acceptor VPC for the peering connection          | string | ""      | no       |
 |   vpc_peering_tags     | A map of tags to apply to the VPC peering connection       | map    | {}      | no       |
+|   eip_tags             | A map of tags to apply to the eip                          | map    | {}      | no       |
 
 ## Outputs
 

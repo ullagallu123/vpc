@@ -125,3 +125,7 @@ variable "vpc_peering_tags" {
   description = "A map of tags to apply to the VPC peering connection"
   default     = {}
 }
+variable "eip_tags" {
+  description = "A map of tags to apply eip"
+  default = {}
+}

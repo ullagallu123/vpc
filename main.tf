@@ -212,6 +212,13 @@ resource "aws_db_subnet_group" "default" {
 resource "aws_eip" "example" {
   count  = var.nat ? 1 : 0
   domain = "vpc"
+  tags = merge(
+    var.eip_tags,
+    var.common_tags,
+    {
+      Name = local.name
+    }
+  )
 }
 
 resource "aws_nat_gateway" "example" {
