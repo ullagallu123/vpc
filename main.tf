@@ -80,6 +80,14 @@ resource "aws_route" "public_igw" {
   gateway_id             = aws_internet_gateway.gw.id
 }
 
+# peering rule
+resource "aws_route" "public_peering" {
+  count = var.peering && var.acceptor_vpc_id ? 1 : 0
+  route_table_id         = aws_route_table.public.id
+  destination_cidr_block = data.aws_vpc.selected.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering[count.index].id
+}
+
 ### private subnets
 
 resource "aws_subnet" "private" {
@@ -124,6 +132,13 @@ resource "aws_route" "private_nat" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.example[0].id
 }
+# peering rule
+resource "aws_route" "private_peering" {
+  count = var.peering && var.acceptor_vpc_id ? 1 : 0
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = data.aws_vpc.selected.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering[count.index].id
+}
 
 ### db subnets
 
@@ -167,6 +182,14 @@ resource "aws_route" "db_nat" {
   route_table_id         = aws_route_table.db.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.example[0].id
+}
+
+# db peering rule
+resource "aws_route" "private_peering" {
+  count = var.peering && var.acceptor_vpc_id ? 1 : 0
+  route_table_id         = aws_route_table.db.id
+  destination_cidr_block = data.aws_vpc.selected.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering[count.index].id
 }
 
 
@@ -215,7 +238,17 @@ resource "aws_vpc_peering_connection" "peering" {
   vpc_id        = aws_vpc.main.id
   peer_vpc_id   = var.acceptor_vpc_id == "" ? data.aws_vpc.selected.id : var.acceptor_vpc_id
   auto_accept = var.acceptor_vpc_id == "" ? true : false
+  tags = merge(
+    var.vpc_peering_tags,
+    var.common_tags,
+    {
+      Name = local.name
+    }
+
+  )
 }
 
-
+variable "vpc_peering_tags" {
+  default = {}
+}
 
