@@ -85,7 +85,7 @@ resource "aws_route" "public_peering" {
   count = var.peering && var.acceptor_vpc_id != "" ? 1 : 0
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = data.aws_vpc.selected.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering[count.index].id
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
 }
 
 ### private subnets
@@ -137,7 +137,7 @@ resource "aws_route" "private_peering" {
   count = var.peering && var.acceptor_vpc_id != "" ? 1 : 0
   route_table_id         = aws_route_table.private.id
   destination_cidr_block = data.aws_vpc.selected.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering[count.index].id
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
 }
 
 ### db subnets
@@ -189,7 +189,7 @@ resource "aws_route" "db_peering" {
   count = var.peering && var.acceptor_vpc_id != "" ? 1 : 0
   route_table_id         = aws_route_table.db.id
   destination_cidr_block = data.aws_vpc.selected.cidr_block
-  vpc_peering_connection_id = aws_vpc_peering_connection.peering[count.index].id
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
 }
 
 
