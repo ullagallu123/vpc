@@ -248,7 +248,3 @@ resource "aws_vpc_peering_connection" "peering" {
   )
 }
 
-variable "vpc_peering_tags" {
-  default = {}
-}
-
