@@ -76,3 +76,10 @@ variable "nat" {
   default = false
 }
 
+variable "peering" {
+  default = false
+}
+
+variable "acceptor_vpc_id" {
+  default = ""
+}

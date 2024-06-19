@@ -1,4 +1,8 @@
 
+
+data "aws_vpc" "selected" {
+  default = true
+}
 locals {
   name = "${var.project_name}-${var.environemt}"
 }
@@ -202,3 +206,16 @@ resource "aws_nat_gateway" "example" {
   # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.gw]
 }
+
+
+# VPC peering
+
+resource "aws_vpc_peering_connection" "peering" {
+  count = var.peering ? 1 : 0
+  vpc_id        = aws_vpc.main.id
+  peer_vpc_id   = var.acceptor_vpc_id == "" ? data.aws_vpc.selected.id : var.acceptor_vpc_id
+  auto_accept = var.acceptor_vpc_id == "" ? true : false
+}
+
+
+
