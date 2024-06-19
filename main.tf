@@ -185,7 +185,7 @@ resource "aws_route" "db_nat" {
 }
 
 # db peering rule
-resource "aws_route" "private_peering" {
+resource "aws_route" "db_peering" {
   count = var.peering && var.acceptor_vpc_id ? 1 : 0
   route_table_id         = aws_route_table.db.id
   destination_cidr_block = data.aws_vpc.selected.cidr_block
