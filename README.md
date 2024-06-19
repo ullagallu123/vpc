@@ -25,39 +25,39 @@ This Terraform module creates a customizable Virtual Private Cloud (VPC) on AWS 
 
 | Name                   | Description                                                | Type   | Default | Required |
 |------------------------|------------------------------------------------------------|--------|---------|----------|
-| * environemt           | User should mention their environment                      | string |         | yes      |
-| * project_name         | User should mention their project name                     | string |         | yes      |
-| * common_tags          | A map of common tags to apply to all resources             | map    | {}      | no       |
-| * azs                  | List of availability zones to use for the subnets          | list   | []      | yes      |
-| * vpc_cidr             | CIDR block for the VPC                                     | string |         | yes      |
-| * enable_dns_hostnames | Boolean to enable/disable DNS hostnames in the VPC         | bool   |         | yes      |
-| * enable_dns_support   | Boolean to enable/disable DNS support in the VPC           | bool   |         | yes      |
-| * vpc_tags             | A map of tags to apply to the VPC                          | map    | {}      | no       |
-| * igw_tags             | A map of tags to apply to the Internet Gateway             | map    | {}      | no       |
-| * public_subnet_cidrs  | List of CIDR blocks for the public subnets                 | list   | []      | yes      |
-| * public_subnet_tags   | A map of tags to apply to the public subnets               | map    | {}      | no       |
-| * public_rtg_tags      | A map of tags to apply to the public route tables          | map    | {}      | no       |
-| * private_subnet_cidrs | List of CIDR blocks for the private subnets                | list   | []      | yes      |
-| * private_subnet_tags  | A map of tags to apply to the private subnets              | map    | {}      | no       |
-| * private_rtg_tags     | A map of tags to apply to the private route tables         | map    | {}      | no       |
-| * db_subnet_cidrs      | List of CIDR blocks for the database subnets               | list   | []      | yes      |
-| * db_subnet_tags       | A map of tags to apply to the database subnets             | map    | {}      | no       |
-| * db_rtg_tags          | A map of tags to apply to the database route tables        | map    | {}      | no       |
-| * db_group_tags        | A map of tags to apply to the database subnet group        | map    | {}      | no       |
-| * nat_tags             | A map of tags to apply to the NAT Gateway                  | map    | {}      | no       |
-| * nat                  | Boolean to enable/disable the creation of NAT Gateways     | bool   | false   | no       |
-| * peering              | Boolean to enable/disable VPC peering                      | bool   | false   | no       |
-| * acceptor_vpc_id      | ID of the acceptor VPC for the peering connection          | string | ""      | no       |
-| * vpc_peering_tags     | A map of tags to apply to the VPC peering connection       | map    | {}      | no       |
+|   environemt           | User should mention their environment                      | string |         | yes      |
+|   project_name         | User should mention their project name                     | string |         | yes      |
+|   common_tags          | A map of common tags to apply to all resources             | map    | {}      | no       |
+|   azs                  | List of availability zones to use for the subnets          | list   | []      | yes      |
+|   vpc_cidr             | CIDR block for the VPC                                     | string |         | yes      |
+|   enable_dns_hostnames | Boolean to enable/disable DNS hostnames in the VPC         | bool   |         | yes      |
+|   enable_dns_support   | Boolean to enable/disable DNS support in the VPC           | bool   |         | yes      |
+|   vpc_tags             | A map of tags to apply to the VPC                          | map    | {}      | no       |
+|   igw_tags             | A map of tags to apply to the Internet Gateway             | map    | {}      | no       |
+|   public_subnet_cidrs  | List of CIDR blocks for the public subnets                 | list   | []      | yes      |
+|   public_subnet_tags   | A map of tags to apply to the public subnets               | map    | {}      | no       |
+|   public_rtg_tags      | A map of tags to apply to the public route tables          | map    | {}      | no       |
+|   private_subnet_cidrs | List of CIDR blocks for the private subnets                | list   | []      | yes      |
+|   private_subnet_tags  | A map of tags to apply to the private subnets              | map    | {}      | no       |
+|   private_rtg_tags     | A map of tags to apply to the private route tables         | map    | {}      | no       |
+|   db_subnet_cidrs      | List of CIDR blocks for the database subnets               | list   | []      | yes      |
+|   db_subnet_tags       | A map of tags to apply to the database subnets             | map    | {}      | no       |
+|   db_rtg_tags          | A map of tags to apply to the database route tables        | map    | {}      | no       |
+|   db_group_tags        | A map of tags to apply to the database subnet group        | map    | {}      | no       |
+|   nat_tags             | A map of tags to apply to the NAT Gateway                  | map    | {}      | no       |
+|   nat                  | Boolean to enable/disable the creation of NAT Gateways     | bool   | false   | no       |
+|   peering              | Boolean to enable/disable VPC peering                      | bool   | false   | no       |
+|   acceptor_vpc_id      | ID of the acceptor VPC for the peering connection          | string | ""      | no       |
+|   vpc_peering_tags     | A map of tags to apply to the VPC peering connection       | map    | {}      | no       |
 
 ## Outputs
 
 | Name                   | Description                      |
 |------------------------|----------------------------------|
-| * VPC id               | The ID of the created VPC        |
-| * Public subnets ids   | The IDs of the public subnets    |
-| * Private Subnet ids   | The IDs of the private subnets   |
-| * DB Subnet Group Name | DB Group Name                    |
+|   VPC id               | The ID of the created VPC        |
+|   Public Subnets ids   | The IDs of the public subnets    |
+|   Private Subnets ids  | The IDs of the private subnets   |
+|   DB Subnets ids       | The IDs of the db subnets        |
 
 ## Usage Example
 
