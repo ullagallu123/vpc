@@ -15,5 +15,5 @@ output "db_subnets_ids" {
 }
 
 output "db_subnet_group_name" {
-  value = aws_db_subnet_group.default[0].name
+  value = aws_db_subnet_group.default[count.index].name
 }
