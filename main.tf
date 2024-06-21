@@ -128,7 +128,7 @@ resource "aws_route_table_association" "private" {
 
 # private nat rule
 resource "aws_route" "private_nat" {
-   count = length(aws_nat_gateway.example) > 0 ? 1 : 0
+  count = length(aws_nat_gateway.example) > 0 ? 1 : 0
   route_table_id         = aws_route_table.private.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.example[0].id
