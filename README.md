@@ -144,6 +144,6 @@ output "db_subnet_group_name" {
 }
 ```
 
-## Authors
+## Author
 
 - KONKA SIVA RAMA KRISHNA
