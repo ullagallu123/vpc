@@ -84,7 +84,7 @@ provider "aws" {
 
 
 module "vpc_test" {
-  source               = "../"
+  source               = "git::https://github.com/ullagallu123/vpc.git?ref=main"
   environment          = "dev"
   project_name         = "test-project"
   common_tags          = { "Project" = "Test", "Environment" = "dev" }
