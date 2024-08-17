@@ -1,6 +1,6 @@
 # Custom AWS VPC Module
 
-This Terraform module creates a customizable Virtual Private Cloud (VPC) on AWS along with necessary subnets, route tables, internet gateways, NAT gateways, and VPC peering connections.
+This Terraform module creates a customizable Virtual Private Cloud (VPC) on AWS along with necessary subnets, route tables, internet gateways, NAT gateways, and VPC peering connections,vpc flow logs at vpc level and store in cw log group.
 
 ## Features
 
