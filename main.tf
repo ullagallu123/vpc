@@ -1,14 +1,12 @@
-
-
 data "aws_vpc" "selected" {
   default = true
 }
 
 locals {
-  name = "${var.project_name}-${var.environemt}"
+  name = "${var.project_name}-${var.environment}"
 }
 resource "aws_vpc" "main" {
-  cidr_block           = var.vpc_cidr
+  cidr_block           = var.vpc_cidr_block
   instance_tenancy     = "default"
   enable_dns_hostnames = var.enable_dns_hostnames
   enable_dns_support   = var.enable_dns_support
@@ -38,10 +36,10 @@ resource "aws_internet_gateway" "gw" {
 ### public subnets
 # creating subnets
 resource "aws_subnet" "public" {
-  count                   = length(var.public_subnet_cidrs)
+  count                   = length(var.public_subnet_cidr_blocks)
   vpc_id                  = aws_vpc.main.id
-  availability_zone       = var.azs[count.index]
-  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = var.availability_zones[count.index]
+  cidr_block              = var.public_subnet_cidr_blocks[count.index]
   map_public_ip_on_launch = true
 
   tags = merge(
@@ -58,7 +56,7 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   tags = merge(
-    var.public_rtg_tags,
+    var.public_route_table_tags,
     var.common_tags,
     {
       Name = "${local.name}-public"
@@ -83,19 +81,19 @@ resource "aws_route" "public_igw" {
 
 # peering rule
 resource "aws_route" "public_peering" {
-  count = var.peering  ? 1 : 0
-  route_table_id         = aws_route_table.public.id
-  destination_cidr_block = data.aws_vpc.selected.cidr_block
+  count                     = var.enable_vpc_peering ? 1 : 0
+  route_table_id            = aws_route_table.public.id
+  destination_cidr_block    = data.aws_vpc.selected.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
 }
 
 ### private subnets
 
 resource "aws_subnet" "private" {
-  count             = length(var.private_subnet_cidrs)
+  count             = length(var.private_subnet_cidr_blocks)
   vpc_id            = aws_vpc.main.id
-  availability_zone = var.azs[count.index]
-  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+  cidr_block        = var.private_subnet_cidr_blocks[count.index]
   tags = merge(
     var.private_subnet_tags,
     var.common_tags,
@@ -110,7 +108,7 @@ resource "aws_subnet" "private" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
   tags = merge(
-    var.private_rtg_tags,
+    var.private_route_table_tags,
     var.common_tags,
     {
       Name = "${local.name}-private"
@@ -128,26 +126,26 @@ resource "aws_route_table_association" "private" {
 
 # private nat rule
 resource "aws_route" "private_nat" {
-  count = length(aws_nat_gateway.example) > 0 ? 1 : 0
+  count                  = length(aws_nat_gateway.example) > 0 ? 1 : 0
   route_table_id         = aws_route_table.private.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.example[0].id
 }
 # peering rule
 resource "aws_route" "private_peering" {
-  count = var.peering  ? 1 : 0
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = data.aws_vpc.selected.cidr_block
+  count                     = var.enable_vpc_peering ? 1 : 0
+  route_table_id            = aws_route_table.private.id
+  destination_cidr_block    = data.aws_vpc.selected.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
 }
 
 ### db subnets
 
 resource "aws_subnet" "db" {
-  count             = length(var.db_subnet_cidrs)
+  count             = length(var.db_subnet_cidr_blocks)
   vpc_id            = aws_vpc.main.id
-  availability_zone = var.azs[count.index]
-  cidr_block        = var.db_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+  cidr_block        = var.db_subnet_cidr_blocks[count.index]
   tags = merge(
     var.db_subnet_tags,
     var.common_tags,
@@ -162,7 +160,7 @@ resource "aws_subnet" "db" {
 resource "aws_route_table" "db" {
   vpc_id = aws_vpc.main.id
   tags = merge(
-    var.db_rtg_tags,
+    var.db_route_table_tags,
     var.common_tags,
     {
       Name = "${local.name}-db"
@@ -179,7 +177,7 @@ resource "aws_route_table_association" "db" {
 }
 # db nat rule
 resource "aws_route" "db_nat" {
-   count = length(aws_nat_gateway.example) > 0 ? 1 : 0
+  count                  = length(aws_nat_gateway.example) > 0 ? 1 : 0
   route_table_id         = aws_route_table.db.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_nat_gateway.example[0].id
@@ -187,9 +185,9 @@ resource "aws_route" "db_nat" {
 
 # db peering rule
 resource "aws_route" "db_peering" {
-  count = var.peering  ? 1 : 0
-  route_table_id         = aws_route_table.db.id
-  destination_cidr_block = data.aws_vpc.selected.cidr_block
+  count                     = var.enable_vpc_peering ? 1 : 0
+  route_table_id            = aws_route_table.db.id
+  destination_cidr_block    = data.aws_vpc.selected.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
 }
 
@@ -201,7 +199,7 @@ resource "aws_db_subnet_group" "default" {
   subnet_ids = length(aws_subnet.db) >= 2 ? aws_subnet.db[*].id : [] // Use subnet IDs if more than 2 subnets
   name       = local.name
   tags = merge(
-    var.db_group_tags,
+    var.db_subnet_group_tags,
     var.common_tags,
     {
       Name = local.name
@@ -210,7 +208,7 @@ resource "aws_db_subnet_group" "default" {
 }
 
 resource "aws_eip" "example" {
-  count  = var.nat ? 1 : 0
+  count  = var.enable_nat_gateway ? 1 : 0
   domain = "vpc"
   tags = merge(
     var.eip_tags,
@@ -222,11 +220,11 @@ resource "aws_eip" "example" {
 }
 
 resource "aws_nat_gateway" "example" {
-  count = length(aws_subnet.private) > 0 && length(aws_eip.example) > 0 ? 1 : 0
+  count         = length(aws_subnet.private) > 0 && length(aws_eip.example) > 0 ? 1 : 0
   allocation_id = aws_eip.example[count.index].id
   subnet_id     = aws_subnet.public[0].id
   tags = merge(
-    var.nat_tags,
+    var.nat_gateway_tags,
     var.common_tags,
     {
       Name = local.name
@@ -242,9 +240,9 @@ resource "aws_nat_gateway" "example" {
 # VPC peering
 
 resource "aws_vpc_peering_connection" "peering" {
-  count = var.peering ? 1 : 0
-  vpc_id        = aws_vpc.main.id
-  peer_vpc_id   = var.acceptor_vpc_id == "" ? data.aws_vpc.selected.id : var.acceptor_vpc_id
+  count       = var.enable_vpc_peering ? 1 : 0
+  vpc_id      = aws_vpc.main.id
+  peer_vpc_id = var.acceptor_vpc_id == "" ? data.aws_vpc.selected.id : var.acceptor_vpc_id
   auto_accept = var.acceptor_vpc_id == "" ? true : false
   tags = merge(
     var.vpc_peering_tags,
@@ -257,8 +255,58 @@ resource "aws_vpc_peering_connection" "peering" {
 }
 
 resource "aws_route" "default_peering" {
-  count = var.peering ? 1 : 0
-  route_table_id         = data.aws_vpc.selected.main_route_table_id
-  destination_cidr_block = var.vpc_cidr
+  count                     = var.enable_vpc_peering ? 1 : 0
+  route_table_id            = data.aws_vpc.selected.main_route_table_id
+  destination_cidr_block    = var.vpc_cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peering[0].id
+}
+
+# VPC Flow Logs
+
+resource "aws_cloudwatch_log_group" "vpc_log_group" {
+  count             = var.enable_vpc_flow_logs ? 1 : 0
+  name              = "vpc-flow-logs"
+  retention_in_days = 7
+}
+
+resource "aws_iam_role" "vpc_flow_log_role" {
+  count = var.enable_vpc_flow_logs ? 1 : 0
+  name  = "vpcFlowLogRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "vpc-flow-logs.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "vpc_flow_log_policy" {
+  count = var.enable_vpc_flow_logs ? 1 : 0
+  role  = aws_iam_role.vpc_flow_log_role[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      Effect   = "Allow"
+      Resource = "${aws_cloudwatch_log_group.vpc_log_group[0].arn}:*"
+    }]
+  })
+}
+
+resource "aws_flow_log" "vpc_flow_logs" {
+  count                = var.enable_vpc_flow_logs ? 1 : 0
+  log_destination      = aws_cloudwatch_log_group.vpc_log_group[0].arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.main.id
+  iam_role_arn         = aws_iam_role.vpc_flow_log_role[0].arn
 }
