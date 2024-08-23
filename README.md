@@ -61,8 +61,8 @@ This table aligns with the environment and variable configuration provided.
 | Name                   | Description                      |
 |------------------------|----------------------------------|
 |   VPC id               | The ID of the created VPC        |
-|   Public Subnets ids   | The IDs of the public subnets    |
-|   Private Subnets ids  | The IDs of the private subnets   |
+|   Public Subnet ids   | The IDs of the public subnets    |
+|   Private Subnet ids  | The IDs of the private subnets   |
 |   DB Subnets ids       | The IDs of the db subnets        |
 
 ## Usage Example
